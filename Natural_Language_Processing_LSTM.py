@@ -118,8 +118,8 @@ def lstm(X,y,dataX,int_to_char):
     model.add(Dense(y.shape[1], activation='softmax')) # Layer of neurons receiving data from all neurons of previous layer
     
     # load the network weights
-    filename = "weights-improvement-50-1.1959-bigger.keras" # stores the 35th epoch into the filename variable
-    filepath = f"./checkpoints/{filename}" # the checkpoints are in the checkpoint folder
+    filename = "weights-improvement-35-1.2868-bigger.keras" # stores the 35th epoch into the filename variable
+    filepath = f"./checkpoints/Alice_in_Wonderland/32-batch-size/{filename}" # the checkpoints are in the checkpoint folder
     model.load_weights(filepath) # loads the 35th epoch of our LTSM hdf5 file into our model
     model.compile(loss='categorical_crossentropy', optimizer='adam') # defines the loss function, optimizers, and metrics necessary for predictions
     
@@ -167,7 +167,7 @@ def main():
     X,y,char_to_int,int_to_char,dataX,n_vocab = preprocess(raw_text,100)
     
     # parameters: input, target, epoch, batch_size
-    #checkpoint(X,y,50,64) # Only use this when you want to train the neural network
+    # checkpoint(X,y,50,64) # Only use this when you want to train the neural network
     
     print("Original: \n")
     print(raw_text)

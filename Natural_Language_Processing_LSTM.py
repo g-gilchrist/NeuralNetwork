@@ -105,37 +105,31 @@ def checkpoint(model,input,target,number_of_iterations,number_of_samples): # pas
         batch_size=number_of_samples, 
         callbacks=callbacks_list
     )
-    
-    return model
 
 #-----------------------------------------------
 # Long Short Term Memory Algorithm
 #-----------------------------------------------
 # This utilizes the checkpoint created to train the nerual network for patterns
 
-def lstm(model,input,target,dataX,int_to_char):   
+def load_checkpoint(model):   
     # load the network weights
     filename = "weights-improvement-35-1.2868-bigger.keras" # stores the 35th epoch into the filename variable
     filepath = f"./checkpoints/Alice_in_Wonderland/32-batch-size/{filename}" # the checkpoints are in the checkpoint folder
     model.load_weights(filepath) # loads the 35th epoch of our LTSM hdf5 file into our model
     model.compile(loss='categorical_crossentropy', optimizer='adam') # defines the loss function, optimizers, and metrics necessary for predictions
     
+#-----------------------------------------------
+# Text Generator
+#-----------------------------------------------
+# This generates text based on the neural network predictions
+    
+def txtGen(dataX, pattern, n_vocab, model, int_to_char):  
     # pick a random seed
     start = numpy.random.randint(0, len(dataX)-1) # creates a random number
     pattern = dataX[start] # the random number becomes the index, dataX is a list of numerals representing a unique charachter used in the document
     print("\n\n------------------------------------------------------------------------")
     print("\n\nSeed: \n")
     print("\"", ''.join([int_to_char[value] for value in pattern]), "\"", '\n') # converts the integers from the pattern back into charachters
-    
-    # returns the variables to be used in other functions
-    return pattern
-
-#-----------------------------------------------
-# Text Generator
-#-----------------------------------------------
-# This generates text based on the neural network predictions
-    
-def txtGen(pattern, n_vocab, model, int_to_char):  
     print("\n\n------------------------------------------------------------------------")
     print("\n\nGenerated Text: \n")
     # generate characters
@@ -168,7 +162,7 @@ def main():
     print("Original: \n")
     print(raw_text)
            
-    pattern = lstm(model,X,y,dataX,int_to_char)
+    pattern = load_checkpoint(model)
     
     txtGen(pattern,n_vocab,model,int_to_char)
     

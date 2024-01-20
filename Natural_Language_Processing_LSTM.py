@@ -86,10 +86,9 @@ def neural_network(input,target):
 #-----------------------------------------------
 # This creates a checkpoint for each epoch that is used to train the neural network
 
-def checkpoint(input, target, number_of_iterations, number_of_samples): # passing in the variables created in preprocessing to train the neural network 
+def checkpoint(model,input,target,number_of_iterations,number_of_samples): # passing in the variables created in preprocessing to train the neural network 
     
     # define the LSTM model
-    model = neural_network(input,target)
     model.compile(loss='categorical_crossentropy', optimizer='adam') # defines the loss function, optimizers, and metrics necessary for predictions
     
     # define the checkpoint
@@ -106,14 +105,15 @@ def checkpoint(input, target, number_of_iterations, number_of_samples): # passin
         batch_size=number_of_samples, 
         callbacks=callbacks_list
     )
+    
+    return model
 
 #-----------------------------------------------
 # Long Short Term Memory Algorithm
 #-----------------------------------------------
 # This utilizes the checkpoint created to train the nerual network for patterns
 
-def lstm(input,target,dataX,int_to_char):
-    model = neural_network(input,target)    
+def lstm(model,input,target,dataX,int_to_char):   
     # load the network weights
     filename = "weights-improvement-35-1.2868-bigger.keras" # stores the 35th epoch into the filename variable
     filepath = f"./checkpoints/Alice_in_Wonderland/32-batch-size/{filename}" # the checkpoints are in the checkpoint folder
@@ -128,7 +128,7 @@ def lstm(input,target,dataX,int_to_char):
     print("\"", ''.join([int_to_char[value] for value in pattern]), "\"", '\n') # converts the integers from the pattern back into charachters
     
     # returns the variables to be used in other functions
-    return pattern,model
+    return pattern
 
 #-----------------------------------------------
 # Text Generator
@@ -157,19 +157,19 @@ def txtGen(pattern, n_vocab, model, int_to_char):
 # simple main function that calls the different functions.
 
 def main():
-    
+     
     raw_text = load("alice_in_wonderland.txt")
     X,y,char_to_int,int_to_char,dataX,n_vocab = preprocess(raw_text,100)
-    
+    # Create the nueral network model
+    model = neural_network(X,y)
     # parameters: input, target, epoch, batch_size
-    # checkpoint(X,y,50,64) # Only use this when you want to train the neural network
+    # checkpoint(model,X,y,50,64) # Only use this when you want to train the neural network
     
     print("Original: \n")
     print(raw_text)
-    
-    pattern,model = lstm(X,y,dataX,int_to_char)
+           
+    pattern = lstm(model,X,y,dataX,int_to_char)
     
     txtGen(pattern,n_vocab,model,int_to_char)
     
 main()
-

@@ -15,7 +15,6 @@ from keras.callbacks import ModelCheckpoint
 from keras import utils    
 import sys
 
-
 #-----------------------------------------------
 # Loads txt file
 #-----------------------------------------------
@@ -25,7 +24,6 @@ def load(filename):
     raw_text = open(filename, 'r', encoding='utf-8').read()
     raw_text = raw_text.lower()
     return raw_text
-
 
 #-----------------------------------------------
 # Preprocess the data
@@ -69,6 +67,19 @@ def preprocess(raw_text, seq_length):
     # returns the variables to be used in other functions
     return X,y,char_to_int,int_to_char,dataX,n_vocab
 
+#-----------------------------------------------
+# create neural network
+#-----------------------------------------------
+def neural_network(input,target):
+    # define the LSTM model
+    model = Sequential() # creates a sequential object from the keras.model library
+    model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True)) # adds a long short-term memory object to the model, this creates a layer for the neural network
+    model.add(Dropout(0.2)) # creates a dropout layer for the neural network, this reduces overfitting by ignoring neurons
+    model.add(LSTM(256))  # adds another long short-term memory object to the model, this creates a layer for the neural network
+    model.add(Dropout(0.2)) # creates another dropout layer for the neural network, this reduces overfitting by ignoring neurons
+    model.add(Dense(target.shape[1], activation='softmax')) # Layer of neurons receiving data from all neurons of previous layer
+    
+    return model
 
 #-----------------------------------------------
 # create check points 
@@ -78,12 +89,7 @@ def preprocess(raw_text, seq_length):
 def checkpoint(input, target, number_of_iterations, number_of_samples): # passing in the variables created in preprocessing to train the neural network 
     
     # define the LSTM model
-    model = Sequential() # creates a sequential object from the keras.model library
-    model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True)) # adds a long short-term memory object to the model, this creates a layer for the neural network
-    model.add(Dropout(0.2)) # creates a dropout layer for the neural network, this reduces overfitting by ignoring neurons
-    model.add(LSTM(256)) # adds another long short-term memory object to the model, this creates a layer for the neural network
-    model.add(Dropout(0.2)) # creates a dropout layer for the neural network, this reduces overfitting by ignoring neurons
-    model.add(Dense(target.shape[1], activation='softmax')) # Layer of neurons receiving data from all neurons of previous layer
+    model = neural_network(input,target)
     model.compile(loss='categorical_crossentropy', optimizer='adam') # defines the loss function, optimizers, and metrics necessary for predictions
     
     # define the checkpoint
@@ -101,22 +107,13 @@ def checkpoint(input, target, number_of_iterations, number_of_samples): # passin
         callbacks=callbacks_list
     )
 
-
 #-----------------------------------------------
 # Long Short Term Memory Algorithm
 #-----------------------------------------------
 # This utilizes the checkpoint created to train the nerual network for patterns
 
-def lstm(X,y,dataX,int_to_char):
-    
-    # define the LSTM model
-    model = Sequential() # creates a sequential object from the keras.model library
-    model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2]), return_sequences=True)) # adds a long short-term memory object to the model, this creates a layer for the neural network
-    model.add(Dropout(0.2)) # creates a dropout layer for the neural network, this reduces overfitting by ignoring neurons
-    model.add(LSTM(256))  # adds another long short-term memory object to the model, this creates a layer for the neural network
-    model.add(Dropout(0.2)) # creates another dropout layer for the neural network, this reduces overfitting by ignoring neurons
-    model.add(Dense(y.shape[1], activation='softmax')) # Layer of neurons receiving data from all neurons of previous layer
-    
+def lstm(input,target,dataX,int_to_char):
+    model = neural_network(input,target)    
     # load the network weights
     filename = "weights-improvement-35-1.2868-bigger.keras" # stores the 35th epoch into the filename variable
     filepath = f"./checkpoints/Alice_in_Wonderland/32-batch-size/{filename}" # the checkpoints are in the checkpoint folder
@@ -132,7 +129,6 @@ def lstm(X,y,dataX,int_to_char):
     
     # returns the variables to be used in other functions
     return pattern,model
-    
 
 #-----------------------------------------------
 # Text Generator
@@ -154,7 +150,6 @@ def txtGen(pattern, n_vocab, model, int_to_char):
         pattern.append(index) # appends the index to the pattern array
         pattern = pattern[1:len(pattern)] # slices the pattern array and overwrites itself
     print("\nDone.")
-
 
 #-----------------------------------------------
 # Main

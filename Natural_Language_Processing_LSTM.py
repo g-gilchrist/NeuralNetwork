@@ -46,12 +46,14 @@ def preprocess(raw_text, seq_length):
     dataX = [] # declares a list to store sequence in digits (first 100 chars)
     dataY = [] # declares a list to store sequence out digits (> first 100 chars)
     # this splits up the text into sequences of 100 charachters
-    for i in range(0, n_chars - seq_length, 1): # creates a beiginning point of 0 and an end point of the number of charachters minus the sequence length, it increments the for loop by one.
+    # creates a beiginning point of 0 and an end point of the number of charachters minus the sequence length, it increments the for loop by one.
+    for i in range(0, n_chars - seq_length, 1): 
         seq_in = raw_text[i:i + seq_length] # slices the text into 100 charachters
         seq_out = raw_text[i + seq_length] # slices the text into individual charachters after the first 100 charachters
         dataX.append([char_to_int[char] for char in seq_in]) # converts the char from seq_in to an int and appends it to dataX
         dataY.append(char_to_int[seq_out]) # converts the char from seq_out to an int and appends it to dataY
-    n_patterns = len(dataX) # stores the length of dataX, which will be 100 less than total charachters as the first 100 charachters has nothing to compare it to
+    # stores the length of dataX, which will be 100 less than total charachters as the first 100 charachters has nothing to compare it to    
+    n_patterns = len(dataX)
     print("Total Patterns: ", n_patterns) # outputs the number of patterns to the console
     
     # reshape X to be [samples, time steps, features]
@@ -73,7 +75,8 @@ def preprocess(raw_text, seq_length):
 def neural_network(input,target):
     # define the LSTM model
     model = Sequential() # creates a sequential object from the keras.model library
-    model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True)) # adds a long short-term memory object to the model, this creates a layer for the neural network
+    # adds a long short-term memory object to the model, this creates a layer for the neural network
+    model.add(LSTM(256, input_shape=(input.shape[1], input.shape[2]), return_sequences=True)) 
     model.add(Dropout(0.2)) # creates a dropout layer for the neural network, this reduces overfitting by ignoring neurons
     model.add(LSTM(256))  # adds another long short-term memory object to the model, this creates a layer for the neural network
     model.add(Dropout(0.2)) # creates another dropout layer for the neural network, this reduces overfitting by ignoring neurons
@@ -93,7 +96,8 @@ def checkpoint(model,input,target,number_of_iterations,number_of_samples): # pas
     
     # define the checkpoint
     filepath="./checkpoints/weights-improvement-{epoch:02d}-{loss:.4f}-bigger.keras"  # Creates a unique filename
-    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min') # saves the model after each epoch with the unique filename if the loss has improved
+    # saves the model after each epoch with the unique filename if the loss has improved
+    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min') 
     callbacks_list = [checkpoint] # creates a list of checkpoints
     
     # fit the model
@@ -134,7 +138,8 @@ def txtGen(dataX, pattern, n_vocab, model, int_to_char):
     print("\n\nGenerated Text: \n")
     # generate characters
     for char in range(1000): # generates 1000 charachter prediction
-        x = numpy.reshape(pattern, (1, len(pattern), 1)) # returns an array with the same data in a different dimension, in this case a 3d array [[pattern,...,len(patern)]]
+        # returns an array with the same data in a different dimension, in this case a 3d array [[pattern,...,len(patern)]]
+        x = numpy.reshape(pattern, (1, len(pattern), 1))
         x = x / float(n_vocab) # deviding the patern by the number of unique charachters 
         prediction = model.predict(x, verbose=0) # making a prediction based on our pattern
         index = numpy.argmax(prediction) # finds the most probable prediction

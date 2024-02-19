@@ -70,7 +70,7 @@ def preprocess(raw_text, seq_length):
     return X,y,int_to_char,dataX,n_vocab
 
 #-----------------------------------------------
-# create neural network
+# Create LSTM Model
 #-----------------------------------------------
 def neural_network(input,target):
     # define the LSTM model
@@ -85,7 +85,7 @@ def neural_network(input,target):
     return model
 
 #-----------------------------------------------
-# create check points 
+# Train Neural Network and Create checkpoints 
 #-----------------------------------------------
 # This creates a checkpoint for each epoch that is used to train the neural network
 
@@ -111,7 +111,7 @@ def checkpoint(model,input,target,number_of_iterations,number_of_samples): # pas
     )
 
 #-----------------------------------------------
-# Long Short Term Memory Algorithm
+# Load Checkpoints
 #-----------------------------------------------
 # This utilizes the checkpoint created to train the nerual network for patterns
 
@@ -144,7 +144,7 @@ def txtGen(dataX, pattern, n_vocab, model, int_to_char):
         prediction = model.predict(x, verbose=0) # making a prediction based on our pattern
         index = numpy.argmax(prediction) # finds the most probable prediction
         result = int_to_char[index] # converts the integers from the most probable prediction back to a charachter
-        seq_in = [int_to_char[value] for value in pattern]  # converts the integers from the pattern back to a charachter
+        
         sys.stdout.write(result) # outputs the results to the console
         pattern.append(index) # appends the index to the pattern array
         pattern = pattern[1:len(pattern)] # slices the pattern array and overwrites itself

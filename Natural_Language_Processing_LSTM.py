@@ -67,7 +67,7 @@ def preprocess(raw_text, seq_length):
 
 
     # returns the variables to be used in other functions
-    return X,y,char_to_int,int_to_char,dataX,n_vocab
+    return X,y,int_to_char,dataX,n_vocab
 
 #-----------------------------------------------
 # create neural network
@@ -158,17 +158,14 @@ def txtGen(dataX, pattern, n_vocab, model, int_to_char):
 def main():
      
     raw_text = load("alice_in_wonderland.txt")
-    X,y,char_to_int,int_to_char,dataX,n_vocab = preprocess(raw_text,100)
+    X,y,int_to_char,dataX,n_vocab = preprocess(raw_text,100)
     # Create the nueral network model
     model = neural_network(X,y)
     # parameters: input, target, epoch, batch_size
     # checkpoint(model,X,y,50,64) # Only use this when you want to train the neural network
-    
-    print("Original: \n")
-    print(raw_text)
-           
+             
     pattern = load_checkpoint(model)
     
-    txtGen(pattern,n_vocab,model,int_to_char)
+    txtGen(dataX,pattern,n_vocab,model,int_to_char)
     
 main()
